@@ -141,25 +141,16 @@ CREATE POLICY "allow_anon_insert"
   FOR INSERT
   WITH CHECK (true);
 
--- Block anon SELECT / UPDATE / DELETE (HR only)
-CREATE POLICY "block_anon_read"
+-- Allow public SELECT (to fetch registrations in the admin console)
+CREATE POLICY "allow_public_read"
   ON public.onboarding_submissions
   FOR SELECT
-  TO anon
-  USING (false);
-
--- Authenticated users (HR dashboard) can read all
-CREATE POLICY "allow_auth_read"
-  ON public.onboarding_submissions
-  FOR SELECT
-  TO authenticated
   USING (true);
 
--- Authenticated users can update status / review fields
-CREATE POLICY "allow_auth_update"
+-- Allow public UPDATE (to change status/review notes in the admin console)
+CREATE POLICY "allow_public_update"
   ON public.onboarding_submissions
   FOR UPDATE
-  TO authenticated
   USING (true)
   WITH CHECK (true);
 

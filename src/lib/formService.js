@@ -134,11 +134,11 @@ export async function submitOnboardingForm(formData) {
       emergency_address:      formData.emergencyAddress    || null,
 
       // Banking
-      account_holder_name:   formData.accountHolderName,
-      bank_name:             formData.bankName,
+      account_holder_name:   formData.accountHolderName || null,
+      bank_name:             formData.bankName || null,
       branch_name:           formData.branchName      || null,
-      account_number:        formData.accountNumber,
-      ifsc_code:             formData.ifscCode,
+      account_number:        formData.accountNumber || null,
+      ifsc_code:             formData.ifscCode || null,
       upi_id:                formData.upiId           || null,
 
       // Assets & Declaration
@@ -164,7 +164,40 @@ export async function submitOnboardingForm(formData) {
 }
 
 // ─────────────────────────────────────────────
-//  Fetch a single submission by employee code (for admin)
+//  Fetch all submissions (for admin)
+// ─────────────────────────────────────────────
+export async function getAllSubmissions() {
+  const { data, error } = await supabase
+    .from('onboarding_submissions')
+    .select('*')
+    .order('submitted_at', { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+// ─────────────────────────────────────────────
+//  Update submission status & notes (for admin)
+// ─────────────────────────────────────────────
+export async function updateSubmissionStatus(id, status, notes = '') {
+  const { data, error } = await supabase
+    .from('onboarding_submissions')
+    .update({
+      status,
+      review_notes: notes,
+      reviewed_by: 'HR Admin',
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+// ─────────────────────────────────────────────
+//  Fetch a single submission by employee code
 // ─────────────────────────────────────────────
 export async function getSubmissionByCode(employeeCode) {
   const { data, error } = await supabase

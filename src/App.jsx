@@ -1,13 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import AnimatedBackground from './components/AnimatedBackground';
 import HeroSection from './components/HeroSection';
 import MultiStepForm from './components/MultiStepForm';
 import SuccessDashboard from './components/SuccessDashboard';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
-  const [view, setView] = useState('hero');
+  const [view, setView] = useState(() => {
+    return window.location.pathname === '/admin' ? 'admin' : 'hero';
+  });
   const [submittedData, setSubmittedData] = useState(null);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setView(window.location.pathname === '/admin' ? 'admin' : 'hero');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const handleSuccess = (data) => {
     setSubmittedData(data);
@@ -17,6 +28,9 @@ function App() {
   const handleReset = () => {
     setSubmittedData(null);
     setView('hero');
+    if (window.location.pathname !== '/') {
+      window.history.pushState({}, '', '/');
+    }
   };
 
   return (
@@ -60,6 +74,18 @@ function App() {
               transition={{ type: 'spring', stiffness: 200, damping: 25 }}
             >
               <SuccessDashboard data={submittedData} onReset={handleReset} />
+            </motion.div>
+          )}
+
+          {view === 'admin' && (
+            <motion.div
+              key="admin"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+            >
+              <AdminDashboard onBack={handleReset} />
             </motion.div>
           )}
         </AnimatePresence>

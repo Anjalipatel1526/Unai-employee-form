@@ -19,6 +19,13 @@ const itemVariants = {
 };
 
 export default function AdminDashboard({ onBack }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('admin_authenticated') === 'true';
+  });
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [loginError, setLoginError] = useState(null);
+
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,8 +51,21 @@ export default function AdminDashboard({ onBack }) {
   };
 
   useEffect(() => {
-    fetchSubmissions();
-  }, []);
+    if (isAuthenticated) {
+      fetchSubmissions();
+    }
+  }, [isAuthenticated]);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (emailInput === 'admin@unaitech.com' && passwordInput === 'Unaitech@2026') {
+      sessionStorage.setItem('admin_authenticated', 'true');
+      setIsAuthenticated(true);
+      setLoginError(null);
+    } else {
+      setLoginError('Invalid Administrator credentials.');
+    }
+  };
 
   const handleUpdateStatus = async (id, newStatus) => {
     try {
@@ -113,6 +133,83 @@ export default function AdminDashboard({ onBack }) {
         return null;
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative z-20">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl relative"
+        >
+          {/* Logo / Brand */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-electric-600 to-cyan-600 flex items-center justify-center border border-electric-400/30 shadow-glow mb-4">
+              <span className="text-white font-display font-black text-lg">U</span>
+            </div>
+            <h2 className="text-xl font-display font-bold text-white text-center">UNAI Tech</h2>
+            <p className="text-white/40 text-[10px] tracking-wider uppercase mt-1">HR Administration Console</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Administrator ID</label>
+              <input
+                type="email"
+                required
+                value={emailInput}
+                onChange={e => setEmailInput(e.target.value)}
+                placeholder="admin@unaitech.com"
+                className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Password</label>
+              <input
+                type="password"
+                required
+                value={passwordInput}
+                onChange={e => setPasswordInput(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/20 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+              />
+            </div>
+
+            {loginError && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium text-center"
+              >
+                {loginError}
+              </motion.div>
+            )}
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full py-3.5 rounded-xl text-white font-display font-bold text-sm transition-all"
+              style={{
+                background: 'linear-gradient(135deg, #0d82ff 0%, #00a3cd 100%)',
+                boxShadow: '0 4px 20px rgba(13,130,255,0.3)',
+              }}
+            >
+              Sign In to Console
+            </motion.button>
+          </form>
+        </motion.div>
+
+        <button
+          onClick={onBack}
+          className="mt-6 text-xs text-white/40 hover:text-white transition-colors"
+        >
+          ← Go back to Portal
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

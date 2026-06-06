@@ -62,13 +62,13 @@ export const fullSchema = z.object({
   skills: z.array(z.string()).optional(),
 
   // Step 6 – Identity
-  aadhaar: z.string().regex(/^\d{4}\s?\d{4}\s?\d{4}$/, 'Enter a valid 12-digit Aadhaar').optional().or(z.literal('')),
-  pan: z.string().regex(panRegex, 'Enter a valid PAN (e.g. ABCDE1234F)').optional().or(z.literal('')),
-  passport: z.string().optional().or(z.literal('')),
-  drivingLicense: z.string().optional().or(z.literal('')),
-  aadhaarFile: z.any().optional(),
-  panFile: z.any().optional(),
-  resumeFile: z.any().optional(),
+  aadhaar: z.string().min(1, 'Aadhaar number is required').regex(/^\d{4}\s?\d{4}\s?\d{4}$/, 'Enter a valid 12-digit Aadhaar (e.g. 1234 5678 9012)'),
+  pan: z.string().min(1, 'PAN number is required').regex(panRegex, 'Enter a valid PAN (e.g. ABCDE1234F)'),
+  passport: z.string().min(1, 'Passport number is required'),
+  drivingLicense: z.string().min(1, 'Driving License number is required'),
+  aadhaarFile: z.any().refine(val => val && (val.name || val instanceof File), 'Aadhaar copy is required'),
+  panFile: z.any().refine(val => val && (val.name || val instanceof File), 'PAN copy is required'),
+  resumeFile: z.any().refine(val => val && (val.name || val instanceof File), 'Resume / CV copy is required'),
 
   // Step 7 – Emergency
   emergencyName: z.string().min(2, 'Emergency contact name is required'),
@@ -112,7 +112,10 @@ export const stepSchemas = {
     highestQualification: true, university: true, yearOfPassing: true, percentage: true,
   }),
   5: z.object({}).optional(), // Professional is all optional
-  6: z.object({}).optional(), // Identity is all optional
+  6: fullSchema.pick({
+    aadhaar: true, pan: true, passport: true, drivingLicense: true,
+    aadhaarFile: true, panFile: true, resumeFile: true,
+  }),
   7: fullSchema.pick({
     emergencyName: true, emergencyRelationship: true, emergencyMobile: true,
   }),

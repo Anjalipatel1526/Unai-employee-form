@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form';
 import { FormField, Input } from '../FormField';
-import { Upload, X, FileText, Image as ImageIcon, Shield } from 'lucide-react';
+import { Upload, X, FileText, Image as ImageIcon, Shield, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRef, useState } from 'react';
 
@@ -13,11 +13,12 @@ const item = {
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 };
 
-function FileUploadField({ label, name, hint }) {
-  const { setValue, watch } = useFormContext();
+function FileUploadField({ label, name, hint, required }) {
+  const { setValue, watch, formState: { errors } } = useFormContext();
   const [dragging, setDragging] = useState(false);
   const fileRef = useRef();
   const file = watch(name);
+  const error = errors[name]?.message;
 
   const handleFile = (f) => { if (f) setValue(name, f); };
 
@@ -44,9 +45,12 @@ function FileUploadField({ label, name, hint }) {
 
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium text-white/80 block">{label}</label>
+      <label className="text-sm font-medium text-slate-700 flex items-center gap-1">
+        {label}
+        {required && <span className="text-cyan-600 text-xs">*</span>}
+      </label>
       <div
-        className={`file-upload-zone ${dragging ? 'dragging' : ''}`}
+        className={`file-upload-zone ${dragging ? 'dragging' : ''} ${error ? 'border-red-400 bg-red-50/10' : ''}`}
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
@@ -63,13 +67,13 @@ function FileUploadField({ label, name, hint }) {
           <div className="flex items-center gap-3">
             {getIcon(file.name)}
             <div className="flex-1 min-w-0 text-left">
-              <p className="text-sm text-white/80 font-medium truncate">{file.name}</p>
-              <p className="text-xs text-white/40">{formatSize(file.size)}</p>
+              <p className="text-sm text-slate-800 font-medium truncate">{file.name}</p>
+              <p className="text-xs text-slate-500">{formatSize(file.size)}</p>
             </div>
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); setValue(name, null); }}
-              className="text-white/30 hover:text-red-400 transition-colors shrink-0"
+              className="text-slate-400 hover:text-red-500 transition-colors shrink-0"
             >
               <X size={15} />
             </button>
@@ -79,13 +83,19 @@ function FileUploadField({ label, name, hint }) {
             <div className="w-9 h-9 rounded-xl bg-electric-500/10 flex items-center justify-center">
               {getIcon(null)}
             </div>
-            <p className="text-sm text-white/50 text-center">
-              <span className="text-electric-400">Click</span> or drag & drop
+            <p className="text-sm text-slate-600 text-center">
+              <span className="text-electric-500 font-semibold">Click</span> or drag & drop
             </p>
-            {hint && <p className="text-xs text-white/30">{hint}</p>}
+            {hint && <p className="text-xs text-slate-400">{hint}</p>}
           </div>
         )}
       </div>
+      {error && (
+        <p className="text-xs text-red-500 flex items-center gap-1.5 pl-1 mt-1">
+          <AlertCircle size={12} />
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -96,19 +106,19 @@ export default function Step6Identity() {
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
       <motion.div variants={item}>
-        <h2 className="text-xl sm:text-2xl font-display font-bold gradient-text mb-1">Government & Identity</h2>
-        <p className="text-white/50 text-sm">Secure identity verification for HR compliance.</p>
+        <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 mb-1">Government & Identity</h2>
+        <p className="text-slate-500 text-sm">Secure identity verification for HR compliance.</p>
       </motion.div>
 
       {/* Identity Numbers */}
       <motion.div variants={item} className="space-y-4">
-        <p className="text-xs font-semibold text-white/50 uppercase tracking-wider">Identity Numbers</p>
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Identity Numbers</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField label="Aadhaar Number" error={errors.aadhaar?.message} hint="12-digit Aadhaar UID">
+          <FormField label="Aadhaar Number" required error={errors.aadhaar?.message} hint="12-digit Aadhaar UID">
             <Input {...register('aadhaar')} maxLength={14} error={errors.aadhaar?.message} />
           </FormField>
-          <FormField label="PAN Number" error={errors.pan?.message} hint="10-character (e.g. ABCDE1234F)">
+          <FormField label="PAN Number" required error={errors.pan?.message} hint="10-character (e.g. ABCDE1234F)">
             <Input
               {...register('pan')}
               maxLength={10}
@@ -116,10 +126,10 @@ export default function Step6Identity() {
               style={{ textTransform: 'uppercase' }}
             />
           </FormField>
-          <FormField label="Passport Number" error={errors.passport?.message}>
+          <FormField label="Passport Number" required error={errors.passport?.message}>
             <Input {...register('passport')} maxLength={8} error={errors.passport?.message} />
           </FormField>
-          <FormField label="Driving License Number" error={errors.drivingLicense?.message}>
+          <FormField label="Driving License Number" required error={errors.drivingLicense?.message}>
             <Input {...register('drivingLicense')} error={errors.drivingLicense?.message} />
           </FormField>
         </div>
@@ -127,23 +137,23 @@ export default function Step6Identity() {
 
       {/* Document Uploads */}
       <motion.div variants={item} className="space-y-4">
-        <div className="flex items-center justify-between border-t border-white/8 pt-4">
-          <p className="text-xs font-semibold text-white/50 uppercase tracking-wider">Document Uploads</p>
-          <p className="text-xs text-white/30">PDF, PNG, JPG · max 5 MB</p>
+        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Document Uploads</p>
+          <p className="text-xs text-slate-400">PDF, PNG, JPG · max 5 MB</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <FileUploadField label="Aadhaar Copy" name="aadhaarFile" hint="PDF, PNG or JPG" />
-          <FileUploadField label="PAN Copy" name="panFile" hint="PDF, PNG or JPG" />
-          <FileUploadField label="Resume / CV" name="resumeFile" hint="PDF preferred" />
+          <FileUploadField label="Aadhaar Copy" name="aadhaarFile" hint="PDF, PNG or JPG" required />
+          <FileUploadField label="PAN Copy" name="panFile" hint="PDF, PNG or JPG" required />
+          <FileUploadField label="Resume / CV" name="resumeFile" hint="PDF preferred" required />
         </div>
       </motion.div>
 
       {/* Security notice */}
       <motion.div variants={item}>
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-electric-500/5 border border-electric-500/15">
-          <Shield size={15} className="text-electric-400 shrink-0 mt-0.5" />
-          <p className="text-xs text-white/50 leading-relaxed">
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-electric-50/50 border border-electric-200">
+          <Shield size={15} className="text-electric-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-slate-600 leading-relaxed">
             Your documents are encrypted with AES-256 and accessible only to authorized HR personnel.
           </p>
         </div>

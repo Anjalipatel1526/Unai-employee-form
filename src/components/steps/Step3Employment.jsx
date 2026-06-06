@@ -12,9 +12,10 @@ const item = {
 };
 
 const DEPARTMENTS = [
-  'Engineering', 'Product Management', 'Design', 'Data Science & AI',
-  'Marketing', 'Sales', 'Human Resources', 'Finance', 'Operations',
-  'Customer Success', 'Legal', 'Research & Development',
+  'Engineering', 'Product Management', 'UI/UX', 'Data Science & AI',
+  'Marketing', 'Sales', 'Human Resources', 'Finance', 'Research & Development',
+  'Social Media Manager', 'AI Developer', 'Web Developer', 'Full Stack Developer',
+  'Mobile App Developer', 'Content Creator',
 ];
 
 export default function Step3Employment() {

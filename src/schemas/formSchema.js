@@ -64,8 +64,8 @@ export const fullSchema = z.object({
   // Step 6 – Identity
   aadhaar: z.string().min(1, 'Aadhaar number is required').regex(/^\d{4}\s?\d{4}\s?\d{4}$/, 'Enter a valid 12-digit Aadhaar (e.g. 1234 5678 9012)'),
   pan: z.string().min(1, 'PAN number is required').regex(panRegex, 'Enter a valid PAN (e.g. ABCDE1234F)'),
-  passport: z.string().min(1, 'Passport number is required'),
-  drivingLicense: z.string().min(1, 'Driving License number is required'),
+  passport: z.string().optional().or(z.literal('')),
+  drivingLicense: z.string().optional().or(z.literal('')),
   aadhaarFile: z.any().refine(val => val && (val.name || val instanceof File), 'Aadhaar copy is required'),
   panFile: z.any().refine(val => val && (val.name || val instanceof File), 'PAN copy is required'),
   resumeFile: z.any().refine(val => val && (val.name || val instanceof File), 'Resume / CV copy is required'),

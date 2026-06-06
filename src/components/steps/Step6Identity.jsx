@@ -126,10 +126,10 @@ export default function Step6Identity() {
               style={{ textTransform: 'uppercase' }}
             />
           </FormField>
-          <FormField label="Passport Number" required error={errors.passport?.message}>
+          <FormField label="Passport Number" error={errors.passport?.message}>
             <Input {...register('passport')} maxLength={8} error={errors.passport?.message} />
           </FormField>
-          <FormField label="Driving License Number" required error={errors.drivingLicense?.message}>
+          <FormField label="Driving License Number" error={errors.drivingLicense?.message}>
             <Input {...register('drivingLicense')} error={errors.drivingLicense?.message} />
           </FormField>
         </div>

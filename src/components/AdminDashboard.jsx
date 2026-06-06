@@ -469,6 +469,54 @@ export default function AdminDashboard({ onBack }) {
                   )}
                 </div>
 
+                {/* Profile Photo & Uploaded Documents Overview Card */}
+                <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  {/* Photo & Basic Details */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-electric-500 to-cyan-500 flex items-center justify-center border border-slate-200 text-white font-semibold text-2xl overflow-hidden shrink-0 shadow-sm">
+                      {selectedSubmission.profile_photo_url ? (
+                        <img src={selectedSubmission.profile_photo_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        selectedSubmission.full_name?.slice(0, 2).toUpperCase()
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900 leading-snug">{selectedSubmission.full_name}</h3>
+                      <p className="text-sm text-slate-600 font-semibold">{selectedSubmission.designation} • {selectedSubmission.department}</p>
+                      <p className="text-xs text-slate-500 font-mono mt-1">{selectedSubmission.employee_code}</p>
+                    </div>
+                  </div>
+
+                  {/* Documents Column */}
+                  <div className="flex flex-col gap-2 min-w-[220px] w-full md:w-auto">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Documents</p>
+                    <div className="flex flex-col gap-1.5">
+                      {[
+                        { label: 'Resume / CV', url: selectedSubmission.resume_url },
+                        { label: 'Aadhaar Card', url: selectedSubmission.aadhaar_file_url },
+                        { label: 'PAN Card', url: selectedSubmission.pan_file_url },
+                      ].map((doc) => {
+                        if (!doc.url) return null;
+                        return (
+                          <a
+                            key={doc.label}
+                            href={doc.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-electric-600 hover:border-electric-500 transition-all font-medium text-xs shadow-sm group"
+                          >
+                            <span className="flex items-center gap-2">
+                              <FileText size={14} className="text-electric-500" />
+                              {doc.label}
+                            </span>
+                            <Download size={14} className="text-slate-400 group-hover:text-electric-500 transition-colors" />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Section 1: Personal Info */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-electric-400 border-b border-white/5 pb-2">
@@ -797,13 +845,13 @@ export default function AdminDashboard({ onBack }) {
                           href={doc.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all font-medium text-xs group"
+                          className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:text-electric-600 hover:border-electric-500 hover:bg-slate-100 transition-all font-semibold text-xs group shadow-sm"
                         >
                           <span className="flex items-center gap-2">
-                            <FileText size={14} className="text-electric-400" />
+                            <FileText size={14} className="text-electric-500" />
                             {doc.label}
                           </span>
-                          <Download size={14} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+                          <Download size={14} className="text-slate-400 group-hover:text-electric-500 transition-colors" />
                         </a>
                       );
                     })}

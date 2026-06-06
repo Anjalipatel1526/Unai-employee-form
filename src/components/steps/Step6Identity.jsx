@@ -1,8 +1,9 @@
 import { useFormContext } from 'react-hook-form';
 import { FormField, Input } from '../FormField';
-import { Upload, X, FileText, Image as ImageIcon, Shield, AlertCircle } from 'lucide-react';
+import { Upload, X, FileText, Image as ImageIcon, Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRef, useState } from 'react';
+import Tesseract from 'tesseract.js';
 
 const container = {
   hidden: { opacity: 0 },
@@ -19,8 +20,82 @@ function FileUploadField({ label, name, hint, required }) {
   const fileRef = useRef();
   const file = watch(name);
   const error = errors[name]?.message;
+  const ocrError = name === 'aadhaarFile' ? errors.isAadhaarVerified?.message : name === 'panFile' ? errors.isPanVerified?.message : null;
 
-  const handleFile = (f) => { if (f) setValue(name, f); };
+  const [scanStatus, setScanStatus] = useState('idle'); // 'idle', 'scanning', 'success', 'warning'
+  const [scanMessage, setScanMessage] = useState('');
+
+  const handleFile = async (f) => {
+    if (!f) return;
+    setValue(name, f);
+
+    // Reset OCR status
+    setScanStatus('idle');
+    setScanMessage('');
+    if (name === 'aadhaarFile') setValue('isAadhaarVerified', false);
+    if (name === 'panFile') setValue('isPanVerified', false);
+
+    if (name !== 'aadhaarFile' && name !== 'panFile') return;
+
+    if (f.type === 'application/pdf') {
+      setScanStatus('success');
+      setScanMessage('PDF document uploaded.');
+      if (name === 'aadhaarFile') setValue('isAadhaarVerified', true, { shouldValidate: true });
+      if (name === 'panFile') setValue('isPanVerified', true, { shouldValidate: true });
+      return;
+    }
+
+    if (!f.type.startsWith('image/')) {
+      return;
+    }
+
+    setScanStatus('scanning');
+    setScanMessage('Analyzing document...');
+
+    try {
+      const result = await Tesseract.recognize(f, 'eng');
+      const text = result.data.text.toUpperCase();
+
+      if (name === 'aadhaarFile') {
+        const isAadhaar = text.includes('GOVERNMENT OF INDIA') || 
+                          text.includes('AADHAAR') || 
+                          text.includes('आधार') ||
+                          text.includes('भारत सरकार') || 
+                          text.includes('UNIQUE IDENTIFICATION') ||
+                          /\d{4}\s?\d{4}\s?\d{4}/.test(text);
+
+        if (isAadhaar) {
+          setScanStatus('success');
+          setScanMessage('✓ Aadhaar Card detected successfully.');
+          setValue('isAadhaarVerified', true, { shouldValidate: true });
+        } else {
+          setScanStatus('warning');
+          setScanMessage('⚠ Warning: Aadhaar details not detected in image. Please double-check.');
+          setValue('isAadhaarVerified', false);
+        }
+      } else if (name === 'panFile') {
+        const isPan = text.includes('INCOME TAX') || 
+                      text.includes('PERMANENT') || 
+                      text.includes('ACCOUNT') || 
+                      text.includes('DEPARTMENT') ||
+                      /[A-Z]{5}[0-9]{4}[A-Z]/.test(text);
+
+        if (isPan) {
+          setScanStatus('success');
+          setScanMessage('✓ PAN Card detected successfully.');
+          setValue('isPanVerified', true, { shouldValidate: true });
+        } else {
+          setScanStatus('warning');
+          setScanMessage('⚠ Warning: PAN details not detected in image. Please double-check.');
+          setValue('isPanVerified', false);
+        }
+      }
+    } catch (err) {
+      console.error('OCR error:', err);
+      setScanStatus('idle');
+      setScanMessage('');
+    }
+  };
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -72,7 +147,14 @@ function FileUploadField({ label, name, hint, required }) {
             </div>
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setValue(name, null); }}
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setValue(name, null); 
+                setScanStatus('idle');
+                setScanMessage('');
+                if (name === 'aadhaarFile') setValue('isAadhaarVerified', false);
+                if (name === 'panFile') setValue('isPanVerified', false);
+              }}
               className="text-slate-400 hover:text-red-500 transition-colors shrink-0"
             >
               <X size={15} />
@@ -90,10 +172,26 @@ function FileUploadField({ label, name, hint, required }) {
           </div>
         )}
       </div>
+      {scanMessage && (
+        <p className={`text-xs font-semibold mt-1 flex items-center gap-1.5 pl-1 ${
+          scanStatus === 'scanning' ? 'text-cyan-600 animate-pulse' :
+          scanStatus === 'success' ? 'text-emerald-600' :
+          scanStatus === 'warning' ? 'text-amber-600' : 'text-slate-500'
+        }`}>
+          {scanStatus === 'scanning' && <Loader2 size={12} className="animate-spin" />}
+          {scanMessage}
+        </p>
+      )}
       {error && (
         <p className="text-xs text-red-500 flex items-center gap-1.5 pl-1 mt-1">
           <AlertCircle size={12} />
           {error}
+        </p>
+      )}
+      {ocrError && (
+        <p className="text-xs text-red-500 flex items-center gap-1.5 pl-1 mt-1 font-semibold">
+          <AlertCircle size={12} />
+          {ocrError}
         </p>
       )}
     </div>
@@ -146,6 +244,13 @@ export default function Step6Identity() {
           <FileUploadField label="Aadhaar Copy" name="aadhaarFile" hint="PDF, PNG or JPG" required />
           <FileUploadField label="PAN Copy" name="panFile" hint="PDF, PNG or JPG" required />
           <FileUploadField label="Resume / CV" name="resumeFile" hint="PDF preferred" required />
+        </div>
+
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200">
+          <AlertCircle size={15} className="text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-slate-600 leading-relaxed">
+            <strong className="text-amber-800">Aadhaar PDF Notice:</strong> Downloaded e-Aadhaar PDFs are password-protected by default. Please upload a clear photo/image (JPG/PNG) of your Aadhaar card instead, or ensure the password is removed from the PDF before uploading.
+          </p>
         </div>
       </motion.div>
 

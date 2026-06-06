@@ -69,6 +69,8 @@ export const fullSchema = z.object({
   aadhaarFile: z.any().refine(val => val && (val.name || val instanceof File), 'Aadhaar copy is required'),
   panFile: z.any().refine(val => val && (val.name || val instanceof File), 'PAN copy is required'),
   resumeFile: z.any().refine(val => val && (val.name || val instanceof File), 'Resume / CV copy is required'),
+  isAadhaarVerified: z.boolean().refine(v => v === true, 'Aadhaar document must be verified successfully'),
+  isPanVerified: z.boolean().refine(v => v === true, 'PAN document must be verified successfully'),
 
   // Step 7 – Emergency
   emergencyName: z.string().min(2, 'Emergency contact name is required'),
@@ -115,6 +117,7 @@ export const stepSchemas = {
   6: fullSchema.pick({
     aadhaar: true, pan: true, passport: true, drivingLicense: true,
     aadhaarFile: true, panFile: true, resumeFile: true,
+    isAadhaarVerified: true, isPanVerified: true,
   }),
   7: fullSchema.pick({
     emergencyName: true, emergencyRelationship: true, emergencyMobile: true,

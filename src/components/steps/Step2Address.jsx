@@ -41,6 +41,58 @@ export default function Step2Address() {
     }
   };
 
+  const handleCityChange = (e, fieldType) => {
+    const value = e.target.value;
+    const lowerValue = value.toLowerCase().trim();
+
+    if (fieldType === 'current' && sameAddress) {
+      setValue('permanentCity', value, { shouldValidate: true });
+    }
+
+    let detectedState = '';
+    let detectedCountry = '';
+
+    if (lowerValue === 'chennai') {
+      detectedState = 'Tamil Nadu';
+      detectedCountry = 'India';
+    } else if (lowerValue === 'mumbai') {
+      detectedState = 'Maharashtra';
+      detectedCountry = 'India';
+    } else if (lowerValue === 'bangalore' || lowerValue === 'bengaluru') {
+      detectedState = 'Karnataka';
+      detectedCountry = 'India';
+    }
+
+    if (detectedState) {
+      if (fieldType === 'current') {
+        setValue('currentState', detectedState, { shouldValidate: true });
+        setValue('currentCountry', detectedCountry, { shouldValidate: true });
+        if (sameAddress) {
+          setValue('permanentState', detectedState, { shouldValidate: true });
+          setValue('permanentCountry', detectedCountry, { shouldValidate: true });
+        }
+      } else if (fieldType === 'permanent') {
+        setValue('permanentState', detectedState, { shouldValidate: true });
+        setValue('permanentCountry', detectedCountry, { shouldValidate: true });
+      }
+    }
+  };
+
+  const handleStateChange = (e, fieldType) => {
+    const value = e.target.value;
+    if (value) {
+      if (fieldType === 'current') {
+        setValue('currentCountry', 'India', { shouldValidate: true });
+        if (sameAddress) {
+          setValue('permanentState', value, { shouldValidate: true });
+          setValue('permanentCountry', 'India', { shouldValidate: true });
+        }
+      } else if (fieldType === 'permanent') {
+        setValue('permanentCountry', 'India', { shouldValidate: true });
+      }
+    }
+  };
+
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
       <motion.div variants={item}>
@@ -58,10 +110,24 @@ export default function Step2Address() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormField label="City" required error={errors.currentCity?.message}>
-            <Input {...register('currentCity')} error={errors.currentCity?.message} />
+            <Input 
+              {...register('currentCity')} 
+              onChange={(e) => {
+                register('currentCity').onChange(e);
+                handleCityChange(e, 'current');
+              }}
+              error={errors.currentCity?.message} 
+            />
           </FormField>
           <FormField label="State" required error={errors.currentState?.message}>
-            <Select {...register('currentState')} error={errors.currentState?.message}>
+            <Select 
+              {...register('currentState')} 
+              onChange={(e) => {
+                register('currentState').onChange(e);
+                handleStateChange(e, 'current');
+              }}
+              error={errors.currentState?.message}
+            >
               <option value="">— Select State —</option>
               {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
             </Select>
@@ -109,10 +175,26 @@ export default function Step2Address() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormField label="City" required error={errors.permanentCity?.message}>
-            <Input {...register('permanentCity')} error={errors.permanentCity?.message} disabled={sameAddress} />
+            <Input 
+              {...register('permanentCity')} 
+              onChange={(e) => {
+                register('permanentCity').onChange(e);
+                handleCityChange(e, 'permanent');
+              }}
+              error={errors.permanentCity?.message} 
+              disabled={sameAddress} 
+            />
           </FormField>
           <FormField label="State" required error={errors.permanentState?.message}>
-            <Select {...register('permanentState')} error={errors.permanentState?.message} disabled={sameAddress}>
+            <Select 
+              {...register('permanentState')} 
+              onChange={(e) => {
+                register('permanentState').onChange(e);
+                handleStateChange(e, 'permanent');
+              }}
+              error={errors.permanentState?.message} 
+              disabled={sameAddress}
+            >
               <option value="">— Select State —</option>
               {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
             </Select>

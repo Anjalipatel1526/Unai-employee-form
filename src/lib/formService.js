@@ -267,14 +267,19 @@ export async function updateSubmissionDetails(id, employeeCode, textFields, file
 //  Delete a submission (for admin)
 // ─────────────────────────────────────────────
 export async function deleteSubmission(id) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('onboarding_submissions')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .select();
 
   if (error) {
     console.error('[Supabase] Delete failed:', error.message);
     throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error("No record was deleted. If Row Level Security (RLS) is enabled, please make sure you have executed the DELETE policy SQL on your Supabase dashboard.");
   }
   return true;
 }

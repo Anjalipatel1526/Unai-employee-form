@@ -62,6 +62,8 @@ export default function MultiStepForm({ onSuccess }) {
       assets: [],
       additionalEducation: [],
       declaration: false,
+      isAadhaarVerified: false,
+      isPanVerified: false,
     },
   });
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const phoneRegex = /^[+]?[\d\s\-().]{7,15}$/;
+const phoneRegex = /^(?:\+91|0)?[6-9]\d{9}$/;
 const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/i;
 const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
 const pincodeRegex = /^\d{6}$/;
@@ -15,8 +15,8 @@ export const fullSchema = z.object({
   nationality: z.string().optional().or(z.literal('')),
   bloodGroup: z.string().optional().or(z.literal('')),
   personalEmail: z.string().email('Enter a valid email address'),
-  mobile: z.string().regex(phoneRegex, 'Enter a valid mobile number'),
-  alternateNumber: z.string().regex(phoneRegex, 'Enter a valid number').optional().or(z.literal('')),
+  mobile: z.string().regex(phoneRegex, 'Enter a valid 10-digit mobile number'),
+  alternateNumber: z.string().regex(phoneRegex, 'Enter a valid 10-digit number').optional().or(z.literal('')),
   profilePhoto: z.any().optional(),
 
   // Step 2 – Address
@@ -73,8 +73,8 @@ export const fullSchema = z.object({
   // Step 7 – Emergency
   emergencyName: z.string().min(2, 'Emergency contact name is required'),
   emergencyRelationship: z.string().min(1, 'Relationship is required'),
-  emergencyMobile: z.string().regex(phoneRegex, 'Enter a valid mobile number'),
-  emergencyAlternate: z.string().regex(phoneRegex, 'Enter a valid number').optional().or(z.literal('')),
+  emergencyMobile: z.string().regex(phoneRegex, 'Enter a valid 10-digit mobile number'),
+  emergencyAlternate: z.string().regex(phoneRegex, 'Enter a valid 10-digit number').optional().or(z.literal('')),
   emergencyAddress: z.string().optional().or(z.literal('')),
 
   // Step 8 – Banking

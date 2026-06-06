@@ -18,8 +18,7 @@ const QUALIFICATIONS = [
   'M.Sc', 'MBA', 'MCA', 'Ph.D.', 'Other',
 ];
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString());
+const years = Array.from({ length: 2050 - 1980 + 1 }, (_, i) => (2050 - i).toString());
 
 export default function Step4Education() {
   const { register, formState: { errors }, control } = useFormContext();

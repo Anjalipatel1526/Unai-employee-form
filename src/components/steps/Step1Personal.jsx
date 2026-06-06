@@ -117,7 +117,7 @@ export default function Step1Personal() {
           <FormField label="Blood Group" error={errors.bloodGroup?.message}>
             <Select {...register('bloodGroup')} error={errors.bloodGroup?.message}>
               <option value="">— Select —</option>
-              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => (
+              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'A1+', 'A1-', 'A2+', 'A2-', 'A1B+', 'A1B-', 'A2B+', 'A2B-'].map(bg => (
                 <option key={bg} value={bg}>{bg}</option>
               ))}
             </Select>

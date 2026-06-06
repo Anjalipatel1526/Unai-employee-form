@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const phoneRegex = /^(?:\+91|0)?[6-9]\d{9}$/;
+const phoneRegex = /^(?:\+\d{1,3}|0)?\d{10}$/;
 const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/i;
 const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
 const pincodeRegex = /^\d{6}$/;

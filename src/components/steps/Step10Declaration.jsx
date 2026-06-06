@@ -26,7 +26,7 @@ function SignaturePad({ onChange }) {
     canvas.height = rect.height * dpr;
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
-    ctx.strokeStyle = '#00d1ff';
+    ctx.strokeStyle = '#0d82ff';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';

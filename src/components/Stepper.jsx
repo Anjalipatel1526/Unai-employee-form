@@ -71,7 +71,7 @@ export default function Stepper({ currentStep, totalSteps }) {
                         w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold
                         border-2 transition-all duration-300 relative
                         ${isCompleted
-                          ? 'bg-gradient-to-br from-electric-500 to-cyan-600 border-electric-500 text-white shadow-glow'
+                          ? 'bg-electric-500 border-electric-500 text-white shadow-sm'
                           : isActive
                             ? 'border-electric-500 bg-electric-500/20 text-electric-400'
                             : 'border-white/15 bg-white/5 text-white/30'

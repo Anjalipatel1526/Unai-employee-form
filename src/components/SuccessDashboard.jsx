@@ -114,7 +114,7 @@ export default function SuccessDashboard({ data, onReset }) {
             transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
             className="relative mb-6"
           >
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-electric-500 to-cyan-500 flex items-center justify-center shadow-glow">
+            <div className="w-24 h-24 rounded-full bg-electric-500 flex items-center justify-center shadow-lg">
               <CheckCircle2 size={44} className="text-white" strokeWidth={2} />
             </div>
             <motion.div
@@ -131,7 +131,7 @@ export default function SuccessDashboard({ data, onReset }) {
             Welcome to UNAI Tech!
           </motion.h1>
           <motion.p variants={item} className="text-white/60 text-base">
-            {data.fullName ? `Congratulations, ${data.fullName.split(' ')[0]}!` : 'Congratulations!'} Your onboarding is <span className="text-emerald-400 font-semibold">100% complete</span>.
+            {data.fullName ? `Congratulations, ${data.fullName.split(' ')[0]}!` : 'Congratulations!'} Your onboarding is <span className="text-emerald-500 font-semibold">100% complete</span>.
           </motion.p>
         </motion.div>
 
@@ -140,9 +140,9 @@ export default function SuccessDashboard({ data, onReset }) {
           <div
             className="relative overflow-hidden rounded-2xl p-6"
             style={{
-              background: 'linear-gradient(135deg, #0a1628 0%, #0d1f3c 50%, #0a1628 100%)',
-              border: '1px solid rgba(13,130,255,0.3)',
-              boxShadow: '0 0 40px rgba(13,130,255,0.2), 0 20px 60px rgba(0,0,0,0.5)',
+              background: '#ffffff',
+              border: '1.5px solid rgba(13,130,255,0.2)',
+              boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05), 0 0 0 1px rgba(255,255,255,1) inset',
             }}
           >
             {/* Card decorations */}
@@ -152,7 +152,7 @@ export default function SuccessDashboard({ data, onReset }) {
             <div className="relative flex items-start justify-between gap-4">
               <div className="flex items-start gap-4">
                 {/* Avatar */}
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-electric-500 to-cyan-600 flex items-center justify-center text-white text-2xl font-bold shrink-0 shadow-glow">
+                <div className="w-16 h-16 rounded-2xl bg-electric-500 flex items-center justify-center text-white text-2xl font-bold shrink-0 shadow-md">
                   {data.fullName ? data.fullName.charAt(0).toUpperCase() : <User size={28} />}
                 </div>
                 <div>

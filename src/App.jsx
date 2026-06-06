@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import AnimatedBackground from './components/AnimatedBackground';
 import HeroSection from './components/HeroSection';
 import MultiStepForm from './components/MultiStepForm';
 import SuccessDashboard from './components/SuccessDashboard';
@@ -8,13 +7,15 @@ import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   const [view, setView] = useState(() => {
-    return window.location.pathname === '/admin' ? 'admin' : 'hero';
+    const cleanPath = window.location.pathname.replace(/\/$/, '');
+    return cleanPath === '/admin' ? 'admin' : 'hero';
   });
   const [submittedData, setSubmittedData] = useState(null);
 
   useEffect(() => {
     const handlePopState = () => {
-      setView(window.location.pathname === '/admin' ? 'admin' : 'hero');
+      const cleanPath = window.location.pathname.replace(/\/$/, '');
+      setView(cleanPath === '/admin' ? 'admin' : 'hero');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -28,16 +29,14 @@ function App() {
   const handleReset = () => {
     setSubmittedData(null);
     setView('hero');
-    if (window.location.pathname !== '/') {
+    const cleanPath = window.location.pathname.replace(/\/$/, '');
+    if (cleanPath !== '') {
       window.history.pushState({}, '', '/');
     }
   };
 
   return (
-    <div className="relative min-h-screen" style={{ background: '#050b18' }}>
-      {/* Always-present animated background */}
-      <AnimatedBackground />
-
+    <div className="relative min-h-screen" style={{ background: '#ffffff' }}>
       {/* Main content */}
       <div className="relative z-10">
         <AnimatePresence mode="wait">

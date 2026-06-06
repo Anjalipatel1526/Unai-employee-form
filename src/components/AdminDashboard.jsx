@@ -191,8 +191,8 @@ export default function AdminDashboard({ onBack }) {
               type="submit"
               className="w-full py-3.5 rounded-xl text-white font-display font-bold text-sm transition-all"
               style={{
-                background: 'linear-gradient(135deg, #0d82ff 0%, #00a3cd 100%)',
-                boxShadow: '0 4px 20px rgba(13,130,255,0.3)',
+                background: '#0d82ff',
+                boxShadow: '0 4px 20px rgba(13,130,255,0.15)',
               }}
             >
               Sign In to Console
@@ -202,7 +202,7 @@ export default function AdminDashboard({ onBack }) {
 
         <button
           onClick={onBack}
-          className="mt-6 text-xs text-white/40 hover:text-white transition-colors"
+          className="mt-6 text-xs text-slate-800 hover:text-black font-semibold transition-colors"
         >
           ← Go back to Portal
         </button>
@@ -242,24 +242,24 @@ export default function AdminDashboard({ onBack }) {
       {/* Stats Widgets */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total Enrolled', value: totalCount, icon: Users, color: 'from-blue-500/20 to-blue-600/5 text-blue-400 border-blue-500/20' },
-          { label: 'Pending Review', value: pendingCount, icon: AlertCircle, color: 'from-amber-500/20 to-amber-600/5 text-amber-400 border-amber-500/20' },
-          { label: 'Active / Verified', value: verifiedCount, icon: CheckCircle2, color: 'from-emerald-500/20 to-emerald-600/5 text-emerald-400 border-emerald-500/20' },
-          { label: 'Team Breakdown', value: `${employeeCount} E / ${internCount} I`, icon: ShieldCheck, color: 'from-cyan-500/20 to-cyan-600/5 text-cyan-400 border-cyan-500/20' },
+          { label: 'Total Enrolled', value: totalCount, icon: Users, color: 'bg-blue-50/50 text-blue-600 border-blue-200/60' },
+          { label: 'Pending Review', value: pendingCount, icon: AlertCircle, color: 'bg-amber-50/50 text-amber-600 border-amber-200/60' },
+          { label: 'Active / Verified', value: verifiedCount, icon: CheckCircle2, color: 'bg-emerald-50/50 text-emerald-600 border-emerald-200/60' },
+          { label: 'Team Breakdown', value: `${employeeCount} E / ${internCount} I`, icon: ShieldCheck, color: 'bg-cyan-50/50 text-cyan-600 border-cyan-200/60' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className={`p-5 rounded-2xl border bg-gradient-to-br ${stat.color} flex items-center justify-between backdrop-blur-md`}
+            className={`p-5 rounded-2xl border ${stat.color} flex items-center justify-between backdrop-blur-md`}
           >
             <div>
-              <p className="text-xs text-white/40 font-medium uppercase tracking-wider">{stat.label}</p>
-              <p className="text-2xl font-black font-display text-white mt-1">{stat.value}</p>
+              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{stat.label}</p>
+              <p className="text-2xl font-black font-display text-slate-900 mt-1">{stat.value}</p>
             </div>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-              <stat.icon size={20} className={stat.color.split(' ')[2]} />
+            <div className="p-3 rounded-xl bg-white border border-slate-200">
+              <stat.icon size={20} className={stat.color.split(' ')[1]} />
             </div>
           </motion.div>
         ))}

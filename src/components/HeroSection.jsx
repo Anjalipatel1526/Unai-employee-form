@@ -37,7 +37,7 @@ export default function HeroSection({ onStart }) {
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-black leading-tight mb-4">
           <span className="text-white">Welcome</span>
           <br />
-          <span className="gradient-text">to the Team</span>
+          <span className="text-electric-500">to the Team</span>
         </h1>
         <p className="text-lg sm:text-xl text-white/50 leading-relaxed max-w-xl mx-auto">
           Complete your onboarding process and help us build the future together.
@@ -51,22 +51,15 @@ export default function HeroSection({ onStart }) {
         transition={{ delay: 0.5 }}
         className="flex flex-wrap justify-center gap-3 mb-10"
       >
-        {features.map(({ icon: Icon, label, color }, i) => (
+        {features.map(({ icon: Icon, label }, i) => (
           <motion.div
             key={label}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 + i * 0.1, type: 'spring', stiffness: 200 }}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium
-              border backdrop-blur-sm
-              ${color === 'electric'
-                ? 'bg-electric-500/10 border-electric-500/25 text-electric-300'
-                : 'bg-cyan-500/10 border-cyan-500/25 text-cyan-300'
-              }
-            `}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 border border-slate-200 text-slate-600"
           >
-            <Icon size={14} />
+            <Icon size={14} className="text-electric-500" />
             {label}
           </motion.div>
         ))}

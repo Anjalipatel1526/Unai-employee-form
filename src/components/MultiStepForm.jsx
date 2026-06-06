@@ -116,8 +116,8 @@ export default function MultiStepForm({ onSuccess }) {
           className="w-full max-w-2xl mb-6"
         >
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-electric-600 to-cyan-600 flex items-center justify-center border border-electric-400/30 shadow-glow shrink-0">
-              <span className="text-white font-display font-black text-sm">U</span>
+            <div className="w-9 h-9 shrink-0">
+              <img src="/logo.png" alt="UNAI Tech Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <p className="text-white/80 font-display font-semibold text-sm leading-tight">UNAI Tech</p>

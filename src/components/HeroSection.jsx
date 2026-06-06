@@ -18,11 +18,8 @@ export default function HeroSection({ onStart }) {
         transition={{ delay: 0.2 }}
         className="flex items-center gap-3 mb-12"
       >
-        <div className="relative w-12 h-12 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-electric-500 to-cyan-500 opacity-20 blur-md" />
-          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-electric-600 to-cyan-600 flex items-center justify-center border border-electric-400/30 shadow-glow">
-            <span className="text-white font-display font-black text-lg">U</span>
-          </div>
+        <div className="w-12 h-12 flex items-center justify-center">
+          <img src="/logo.png" alt="UNAI Tech Logo" className="w-full h-full object-contain" />
         </div>
         <div className="text-left">
           <p className="text-white font-display font-bold text-lg leading-tight">UNAI Tech</p>

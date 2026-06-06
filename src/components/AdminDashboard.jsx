@@ -142,10 +142,9 @@ export default function AdminDashboard({ onBack }) {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full max-w-md p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl relative"
         >
-          {/* Logo / Brand */}
           <div className="flex flex-col items-center mb-8">
-            <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-electric-600 to-cyan-600 flex items-center justify-center border border-electric-400/30 shadow-glow mb-4">
-              <span className="text-white font-display font-black text-lg">U</span>
+            <div className="w-12 h-12 mb-4">
+              <img src="/logo.png" alt="UNAI Tech Logo" className="w-full h-full object-contain" />
             </div>
             <h2 className="text-xl font-display font-bold text-white text-center">UNAI Tech</h2>
             <p className="text-white/40 text-[10px] tracking-wider uppercase mt-1">HR Administration Console</p>

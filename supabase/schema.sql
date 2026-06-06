@@ -154,19 +154,32 @@ CREATE POLICY "allow_public_update"
   USING (true)
   WITH CHECK (true);
 
+-- Allow public DELETE (to remove registration in the admin console)
+CREATE POLICY "allow_public_delete"
+  ON public.onboarding_submissions
+  FOR DELETE
+  USING (true);
+
 -- ================================================================
 --  STORAGE BUCKET: onboarding-documents
 --  Run in: Supabase Dashboard → Storage → New Bucket
---  OR run this SQL (requires storage extension):
+--  OR run this SQL to initialize bucket and security policies:
 -- ================================================================
--- INSERT INTO storage.buckets (id, name, public, file_size_limit)
--- VALUES ('onboarding-documents', 'onboarding-documents', false, 5242880)  -- 5 MB limit
--- ON CONFLICT (id) DO NOTHING;
 
--- Storage policy — allow anon upload
--- CREATE POLICY "allow_anon_upload"
---   ON storage.objects FOR INSERT TO anon
---   WITH CHECK (bucket_id = 'onboarding-documents');
+-- 1. Create the bucket (set as public = true so public URL access works)
+INSERT INTO storage.buckets (id, name, public, file_size_limit)
+VALUES ('onboarding-documents', 'onboarding-documents', true, 5242880)  -- 5 MB limit
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Allow anonymous uploads (INSERT) to the bucket
+CREATE POLICY "Allow anonymous upload"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'onboarding-documents');
+
+-- 3. Allow public reading (SELECT) of the files
+CREATE POLICY "Allow public read"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'onboarding-documents');
 
 -- ================================================================
 --  SAMPLE QUERY: View all pending submissions

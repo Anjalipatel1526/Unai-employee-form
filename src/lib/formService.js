@@ -209,3 +209,72 @@ export async function getSubmissionByCode(employeeCode) {
   if (error) throw new Error(error.message);
   return data;
 }
+
+// ─────────────────────────────────────────────
+//  Update submission text details & upload new documents
+// ─────────────────────────────────────────────
+export async function updateSubmissionDetails(id, employeeCode, textFields, files = {}) {
+  // 1. Upload new files if provided
+  const uploadPromises = {};
+  if (files.profilePhoto) {
+    uploadPromises.profile_photo_url = uploadFile(files.profilePhoto, 'profile-photos', employeeCode);
+  }
+  if (files.aadhaarFile) {
+    uploadPromises.aadhaar_file_url = uploadFile(files.aadhaarFile, 'aadhaar', employeeCode);
+  }
+  if (files.panFile) {
+    uploadPromises.pan_file_url = uploadFile(files.panFile, 'pan', employeeCode);
+  }
+  if (files.resumeFile) {
+    uploadPromises.resume_url = uploadFile(files.resumeFile, 'resumes', employeeCode);
+  }
+
+  const resolvedUrls = {};
+  const keys = Object.keys(uploadPromises);
+  if (keys.length > 0) {
+    const results = await Promise.all(Object.values(uploadPromises));
+    keys.forEach((key, index) => {
+      if (results[index]) {
+        resolvedUrls[key] = results[index];
+      }
+    });
+  }
+
+  // 2. Prepare database update payload
+  const updatePayload = {
+    ...textFields,
+    ...resolvedUrls,
+    updated_at: new Date().toISOString()
+  };
+
+  // 3. Update in database
+  const { data, error } = await supabase
+    .from('onboarding_submissions')
+    .update(updatePayload)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[Supabase] Update failed:', error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+// ─────────────────────────────────────────────
+//  Delete a submission (for admin)
+// ─────────────────────────────────────────────
+export async function deleteSubmission(id) {
+  const { error } = await supabase
+    .from('onboarding_submissions')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('[Supabase] Delete failed:', error.message);
+    throw new Error(error.message);
+  }
+  return true;
+}

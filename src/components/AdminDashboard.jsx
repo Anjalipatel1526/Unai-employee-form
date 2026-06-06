@@ -4,9 +4,9 @@ import {
   Users, CheckCircle2, AlertCircle, XCircle, Search, 
   ArrowLeft, Download, ShieldCheck, Mail, Phone, Calendar, 
   MapPin, Briefcase, GraduationCap, FileText, Landmark,
-  ExternalLink, UserCheck, UserX, UserMinus, Plus
+  ExternalLink, UserCheck, UserX, UserMinus, Plus, Pencil, Trash2
 } from 'lucide-react';
-import { getAllSubmissions, updateSubmissionStatus } from '../lib/formService';
+import { getAllSubmissions, updateSubmissionStatus, updateSubmissionDetails, deleteSubmission } from '../lib/formService';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -35,6 +35,82 @@ export default function AdminDashboard({ onBack }) {
   const [deptFilter, setDeptFilter] = useState('all');
   const [notes, setNotes] = useState('');
   const [updating, setUpdating] = useState(false);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [editFiles, setEditFiles] = useState({});
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [candidateToDelete, setCandidateToDelete] = useState(null);
+
+  const startEditing = (sub) => {
+    setEditForm({
+      full_name: sub.full_name || '',
+      mobile: sub.mobile || '',
+      personal_email: sub.personal_email || '',
+      department: sub.department || '',
+      designation: sub.designation || '',
+      aadhaar_number: sub.aadhaar_number || '',
+      pan_number: sub.pan_number || '',
+    });
+    setEditFiles({});
+    setIsEditing(true);
+  };
+
+  const handleEditChange = (field, val) => {
+    setEditForm(prev => ({ ...prev, [field]: val }));
+  };
+
+  const handleEditFileChange = (field, file) => {
+    setEditFiles(prev => ({ ...prev, [field]: file }));
+  };
+
+  const saveEditedDetails = async () => {
+    try {
+      setUpdating(true);
+      const cleanedForm = {
+        ...editForm,
+        pan_number: editForm.pan_number ? editForm.pan_number.toUpperCase() : '',
+      };
+      
+      const updated = await updateSubmissionDetails(
+        selectedSubmission.id,
+        selectedSubmission.employee_code,
+        cleanedForm,
+        editFiles
+      );
+
+      setSubmissions(prev => prev.map(s => s.id === selectedSubmission.id ? updated : s));
+      setSelectedSubmission(updated);
+      setIsEditing(false);
+      alert('Candidate details and documents updated successfully!');
+    } catch (err) {
+      alert('Failed to update candidate details: ' + err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
+  const triggerDeleteConfirm = (sub) => {
+    setCandidateToDelete(sub);
+    setShowDeleteConfirm(true);
+  };
+
+  const executeDeleteSubmission = async () => {
+    if (!candidateToDelete) return;
+    try {
+      setUpdating(true);
+      await deleteSubmission(candidateToDelete.id);
+      setSubmissions(prev => prev.filter(s => s.id !== candidateToDelete.id));
+      setSelectedSubmission(null);
+      setIsEditing(false);
+      setShowDeleteConfirm(false);
+      setCandidateToDelete(null);
+    } catch (err) {
+      alert('Failed to delete candidate: ' + err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const fetchSubmissions = async () => {
     try {
@@ -422,17 +498,193 @@ export default function AdminDashboard({ onBack }) {
                     <p className="text-xs text-white/45">{selectedSubmission.employee_code} • {selectedSubmission.employee_type === 'intern' ? 'Intern' : 'Employee'}</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelectedSubmission(null)}
-                  className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all"
-                >
-                  Close Panel
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={updating}
+                    onClick={() => triggerDeleteConfirm(selectedSubmission)}
+                    className="px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 text-xs font-bold transition-all flex items-center gap-1.5"
+                    title="Delete Candidate"
+                  >
+                    <Trash2 size={14} /> Delete
+                  </button>
+                  <button
+                    onClick={() => { setSelectedSubmission(null); setIsEditing(false); }}
+                    className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    Close Panel
+                  </button>
+                </div>
               </div>
 
               {/* Modal content body */}
               <div className="p-6 space-y-8 flex-1">
-                {/* Status indicator widget */}
+                {isEditing ? (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                      <h3 className="text-lg font-bold text-slate-900">Edit Candidate Details & Documents</h3>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={updating}
+                          onClick={() => setIsEditing(false)}
+                          className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          disabled={updating}
+                          onClick={saveEditedDetails}
+                          className="px-4 py-2 rounded-xl bg-electric-500 hover:bg-electric-600 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                        >
+                          {updating ? 'Saving...' : 'Save Changes'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Edit Fields Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                        <input
+                          type="text"
+                          value={editForm.full_name}
+                          onChange={e => handleEditChange('full_name', e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mobile Number</label>
+                        <input
+                          type="text"
+                          value={editForm.mobile}
+                          onChange={e => handleEditChange('mobile', e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Personal Email</label>
+                        <input
+                          type="email"
+                          value={editForm.personal_email}
+                          onChange={e => handleEditChange('personal_email', e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Department</label>
+                        <select
+                          value={editForm.department}
+                          onChange={e => handleEditChange('department', e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+                        >
+                          <option value="">— Select —</option>
+                          <option value="UI/UX">UI/UX</option>
+                          <option value="Social Media Manager">Social Media Manager</option>
+                          <option value="AI Developer">AI Developer</option>
+                          <option value="Web Developer">Web Developer</option>
+                          <option value="Full Stack Developer">Full Stack Developer</option>
+                          <option value="Mobile App Developer">Mobile App Developer</option>
+                          <option value="Content Creator">Content Creator</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Designation</label>
+                        <input
+                          type="text"
+                          value={editForm.designation}
+                          onChange={e => handleEditChange('designation', e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Aadhaar Number</label>
+                        <input
+                          type="text"
+                          value={editForm.aadhaar_number}
+                          onChange={e => handleEditChange('aadhaar_number', e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PAN Number</label>
+                        <input
+                          type="text"
+                          value={editForm.pan_number}
+                          onChange={e => handleEditChange('pan_number', e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:outline-none focus:border-electric-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Reupload Files Section */}
+                    <div className="space-y-4 pt-4 border-t border-slate-200">
+                      <h4 className="text-sm font-bold text-slate-800">Reupload Documents (Optional)</h4>
+                      <p className="text-xs text-slate-500">Only upload files if you want to replace the existing ones.</p>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Profile Photo</label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => handleEditFileChange('profilePhoto', e.target.files[0])}
+                            className="w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-electric-50 file:text-electric-700 hover:file:bg-electric-100"
+                          />
+                          {editFiles.profilePhoto && <p className="text-xs text-emerald-600 mt-1">✓ Selected: {editFiles.profilePhoto.name}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Resume / CV</label>
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={e => handleEditFileChange('resumeFile', e.target.files[0])}
+                            className="w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-electric-50 file:text-electric-700 hover:file:bg-electric-100"
+                          />
+                          {editFiles.resumeFile && <p className="text-xs text-emerald-600 mt-1">✓ Selected: {editFiles.resumeFile.name}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Aadhaar Card Copy</label>
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={e => handleEditFileChange('aadhaarFile', e.target.files[0])}
+                            className="w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-electric-50 file:text-electric-700 hover:file:bg-electric-100"
+                          />
+                          {editFiles.aadhaarFile && <p className="text-xs text-emerald-600 mt-1">✓ Selected: {editFiles.aadhaarFile.name}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">PAN Card Copy</label>
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={e => handleEditFileChange('panFile', e.target.files[0])}
+                            className="w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-electric-50 file:text-electric-700 hover:file:bg-electric-100"
+                          />
+                          {editFiles.panFile && <p className="text-xs text-emerald-600 mt-1">✓ Selected: {editFiles.panFile.name}</p>}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Action Bar */}
+                    <div className="flex justify-end gap-3 pt-6 border-t border-slate-200">
+                      <button
+                        disabled={updating}
+                        onClick={() => setIsEditing(false)}
+                        className="px-6 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        disabled={updating}
+                        onClick={saveEditedDetails}
+                        className="px-6 py-2.5 rounded-xl bg-electric-500 hover:bg-electric-600 text-white text-sm font-semibold transition-all shadow-md flex items-center gap-2"
+                      >
+                        {updating ? 'Saving Changes...' : 'Save Changes'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Status indicator widget */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
                   <div>
                     <p className="text-xs text-white/35">Current Verification Status</p>
@@ -484,6 +736,12 @@ export default function AdminDashboard({ onBack }) {
                       <h3 className="text-lg font-bold text-slate-900 leading-snug">{selectedSubmission.full_name}</h3>
                       <p className="text-sm text-slate-600 font-semibold">{selectedSubmission.designation} • {selectedSubmission.department}</p>
                       <p className="text-xs text-slate-500 font-mono mt-1">{selectedSubmission.employee_code}</p>
+                      <button
+                        onClick={() => startEditing(selectedSubmission)}
+                        className="mt-2.5 px-3 py-1.5 rounded-lg bg-electric-500/10 hover:bg-electric-500 text-electric-600 hover:text-white border border-electric-500/20 hover:border-electric-500 text-[11px] font-bold transition-all flex items-center gap-1.5"
+                      >
+                        <Pencil size={11} /> Edit Info / Files
+                      </button>
                     </div>
                   </div>
 
@@ -496,7 +754,22 @@ export default function AdminDashboard({ onBack }) {
                         { label: 'Aadhaar Card', url: selectedSubmission.aadhaar_file_url },
                         { label: 'PAN Card', url: selectedSubmission.pan_file_url },
                       ].map((doc) => {
-                        if (!doc.url) return null;
+                        if (!doc.url) {
+                          return (
+                            <div
+                              key={doc.label}
+                              className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-100/50 border border-slate-200 text-slate-400 font-medium text-xs shadow-sm"
+                            >
+                              <span className="flex items-center gap-2">
+                                <FileText size={14} className="text-slate-400" />
+                                {doc.label}
+                              </span>
+                              <span className="text-[10px] bg-slate-200/60 text-slate-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                                Missing
+                              </span>
+                            </div>
+                          );
+                        }
                         return (
                           <a
                             key={doc.label}
@@ -838,7 +1111,22 @@ export default function AdminDashboard({ onBack }) {
                       { label: 'Aadhaar Card', url: selectedSubmission.aadhaar_file_url },
                       { label: 'PAN Card', url: selectedSubmission.pan_file_url },
                     ].map((doc) => {
-                      if (!doc.url) return null;
+                      if (!doc.url) {
+                        return (
+                          <div
+                            key={doc.label}
+                            className="flex items-center justify-between p-3.5 rounded-xl bg-slate-100/50 border border-slate-200 text-slate-400 font-medium text-xs shadow-sm"
+                          >
+                            <span className="flex items-center gap-2">
+                              <FileText size={14} className="text-slate-400" />
+                              {doc.label}
+                            </span>
+                            <span className="text-[10px] bg-slate-200/60 text-slate-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                              Missing
+                            </span>
+                          </div>
+                        );
+                      }
                       return (
                         <a
                           key={doc.label}
@@ -906,9 +1194,64 @@ export default function AdminDashboard({ onBack }) {
                     )}
                   </div>
                 </div>
+                  </>
+                )}
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && candidateToDelete && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowDeleteConfirm(false)}
+              className="absolute inset-0 bg-[#020813]/85 backdrop-blur-sm"
+            />
+            
+            {/* Modal Box */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative bg-[#091122] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-6 text-center z-10"
+            >
+              <div className="mx-auto w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500">
+                <Trash2 size={24} />
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-white">Delete Candidate Profile?</h3>
+                <p className="text-xs text-white/55 leading-relaxed font-sans">
+                  Are you sure you want to delete <span className="font-semibold text-white">{candidateToDelete.full_name}</span>? 
+                  All profile details, registration data, and uploaded documents will be permanently erased. This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  disabled={updating}
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-white/70 text-xs font-semibold transition-all flex-1"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={updating}
+                  onClick={executeDeleteSubmission}
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all flex-1 shadow-lg shadow-rose-500/20 flex items-center justify-center gap-1.5"
+                >
+                  {updating ? 'Deleting...' : 'Delete Permanently'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

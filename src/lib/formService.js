@@ -119,7 +119,7 @@ export async function submitOnboardingForm(formData) {
 
       // Identity
       aadhaar_number:        formData.aadhaar       || null,
-      pan_number:            formData.pan           || null,
+      pan_number:            formData.pan ? formData.pan.toUpperCase() : null,
       passport_number:       formData.passport      || null,
       driving_license:       formData.drivingLicense || null,
       aadhaar_file_url:      aadhaarFileUrl,
@@ -138,7 +138,7 @@ export async function submitOnboardingForm(formData) {
       bank_name:             formData.bankName || null,
       branch_name:           formData.branchName      || null,
       account_number:        formData.accountNumber || null,
-      ifsc_code:             formData.ifscCode || null,
+      ifsc_code:             formData.ifscCode ? formData.ifscCode.toUpperCase() : null,
       upi_id:                formData.upiId           || null,
 
       // Assets & Declaration

@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 const phoneRegex = /^[+]?[\d\s\-().]{7,15}$/;
-const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
-const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/i;
+const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
 const pincodeRegex = /^\d{6}$/;
 
 export const fullSchema = z.object({
@@ -62,7 +62,7 @@ export const fullSchema = z.object({
   skills: z.array(z.string()).optional(),
 
   // Step 6 – Identity
-  aadhaar: z.string().min(1, 'Aadhaar number is required').regex(/^\d{4}\s?\d{4}\s?\d{4}$/, 'Enter a valid 12-digit Aadhaar (e.g. 1234 5678 9012)'),
+  aadhaar: z.string().min(1, 'Aadhaar number is required').regex(/^\d{12}$|^\d{4}\s?\d{4}\s?\d{4}$/, 'Enter a valid 12-digit Aadhaar'),
   pan: z.string().min(1, 'PAN number is required').regex(panRegex, 'Enter a valid PAN (e.g. ABCDE1234F)'),
   passport: z.string().optional().or(z.literal('')),
   drivingLicense: z.string().optional().or(z.literal('')),

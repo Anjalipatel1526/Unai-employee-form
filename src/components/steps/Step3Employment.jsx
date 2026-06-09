@@ -26,7 +26,7 @@ export default function Step3Employment() {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
       <motion.div variants={item}>
         <h2 className="text-xl sm:text-2xl font-display font-bold gradient-text mb-1">Employment Information</h2>
-        <p className="text-white/50 text-sm">Your role details at UNAI Tech.</p>
+        <p className="text-white/50 text-sm">Your role details at UNAI TECH.</p>
       </motion.div>
 
       {/* Employee / Intern toggle */}

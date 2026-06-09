@@ -119,10 +119,10 @@ export default function MultiStepForm({ onSuccess }) {
         >
           <div className="flex items-center gap-3 mb-5">
             <div className="w-9 h-9 shrink-0">
-              <img src="/logo.png" alt="UNAI Tech Logo" className="w-full h-full object-contain" />
+              <img src="/logo.png" alt="UNAI TECH Logo" className="w-full h-full object-contain" />
             </div>
             <div>
-              <p className="text-white/80 font-display font-semibold text-sm leading-tight">UNAI Tech</p>
+              <p className="text-white/80 font-display font-semibold text-sm leading-tight">UNAI TECH</p>
               <p className="text-white/35 text-[10px] tracking-widest uppercase">Onboarding Portal</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function MultiStepForm({ onSuccess }) {
           transition={{ delay: 1 }}
           className="text-center text-xs text-white/20 mt-8 pb-4"
         >
-          © 2024 UNAI Tech · All data is encrypted per our Privacy Policy
+          © 2024 UNAI TECH · All data is encrypted per our Privacy Policy
         </motion.p>
       </div>
     </FormProvider>

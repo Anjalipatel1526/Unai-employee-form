@@ -33,7 +33,7 @@ export default function Step10Declaration() {
             I hereby solemnly declare that all information provided in this onboarding form is true, accurate, and complete to the best of my knowledge. I understand that any misrepresentation or omission of facts may result in immediate termination of my employment or internship.
           </p>
           <p className="text-xs text-white/55 leading-relaxed">
-            I consent to UNAI Tech collecting and processing my personal data as described in the company's Privacy Policy and for the purposes of employment administration.
+            I consent to UNAI TECH collecting and processing my personal data as described in the company's Privacy Policy and for the purposes of employment administration.
           </p>
         </div>
 

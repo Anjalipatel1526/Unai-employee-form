@@ -220,9 +220,9 @@ export default function AdminDashboard({ onBack }) {
         >
           <div className="flex flex-col items-center mb-8">
             <div className="w-12 h-12 mb-4">
-              <img src="/logo.png" alt="UNAI Tech Logo" className="w-full h-full object-contain" />
+              <img src="/logo.png" alt="UNAI TECH Logo" className="w-full h-full object-contain" />
             </div>
-            <h2 className="text-xl font-display font-bold text-white text-center">UNAI Tech</h2>
+            <h2 className="text-xl font-display font-bold text-white text-center">UNAI TECH</h2>
             <p className="text-white/40 text-[10px] tracking-wider uppercase mt-1">HR Administration Console</p>
           </div>
 
@@ -798,10 +798,6 @@ export default function AdminDashboard({ onBack }) {
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6">
                     <div>
-                      <p className="text-xs text-white/35">Preferred Name</p>
-                      <p className="text-sm text-white/85 font-medium mt-0.5">{selectedSubmission.preferred_name || '—'}</p>
-                    </div>
-                    <div>
                       <p className="text-xs text-white/35">Gender</p>
                       <p className="text-sm text-white/85 font-medium mt-0.5 capitalize">{selectedSubmission.gender || '—'}</p>
                     </div>
@@ -820,7 +816,7 @@ export default function AdminDashboard({ onBack }) {
                       <p className="text-sm text-white/85 font-medium mt-0.5 select-all">{selectedSubmission.personal_email}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-white/35">Alternate Contact</p>
+                      <p className="text-xs text-white/35">WhatsApp Number</p>
                       <p className="text-sm text-white/85 font-medium mt-0.5">{selectedSubmission.alternate_number || '—'}</p>
                     </div>
                     <div>

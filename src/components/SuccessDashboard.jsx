@@ -128,7 +128,7 @@ export default function SuccessDashboard({ data, onReset }) {
             variants={item}
             className="text-3xl sm:text-4xl font-display font-bold gradient-text mb-3"
           >
-            Welcome to UNAI Tech!
+            Welcome to UNAI TECH!
           </motion.h1>
           <motion.p variants={item} className="text-white/60 text-base">
             {data.fullName ? `Congratulations, ${data.fullName.split(' ')[0]}!` : 'Congratulations!'} Your onboarding is <span className="text-emerald-500 font-semibold">100% complete</span>.
@@ -158,7 +158,7 @@ export default function SuccessDashboard({ data, onReset }) {
                 <div>
                   <h2 className="text-xl font-display font-bold text-white">{data.fullName || 'Employee'}</h2>
                   <p className="text-electric-300 text-sm font-medium">{data.designation || data.employeeType || 'Team Member'}</p>
-                  <p className="text-white/50 text-xs mt-0.5">{data.department || 'UNAI Tech'}</p>
+                  <p className="text-white/50 text-xs mt-0.5">{data.department || 'UNAI TECH'}</p>
 
                   {/* Employee Code Badge */}
                   <button

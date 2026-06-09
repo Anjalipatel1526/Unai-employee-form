@@ -59,18 +59,11 @@ export default function Step1Personal() {
       </motion.div>
 
       {/* Name fields */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <motion.div variants={item}>
-          <FormField label="Full Name" required error={errors.fullName?.message}>
-            <Input {...register('fullName')} error={errors.fullName?.message} />
-          </FormField>
-        </motion.div>
-        <motion.div variants={item}>
-          <FormField label="Preferred Name" error={errors.preferredName?.message} hint="Name you'd like to be called">
-            <Input {...register('preferredName')} error={errors.preferredName?.message} />
-          </FormField>
-        </motion.div>
-      </div>
+      <motion.div variants={item}>
+        <FormField label="Full Name" required error={errors.fullName?.message}>
+          <Input {...register('fullName')} error={errors.fullName?.message} />
+        </FormField>
+      </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <motion.div variants={item}>
@@ -139,7 +132,7 @@ export default function Step1Personal() {
       </div>
 
       <motion.div variants={item}>
-        <FormField label="Alternate Number" error={errors.alternateNumber?.message} hint="Optional secondary contact">
+        <FormField label="WhatsApp Number" error={errors.alternateNumber?.message} hint="Optional WhatsApp contact number">
           <Input {...register('alternateNumber')} type="tel" error={errors.alternateNumber?.message} />
         </FormField>
       </motion.div>

@@ -1,5 +1,5 @@
 -- ================================================================
---  UNAI Tech — Employee Onboarding Portal
+--  UNAI TECH — Employee Onboarding Portal
 --  Supabase Database Schema
 --  Run this in: Supabase Dashboard → SQL Editor → New Query
 -- ================================================================

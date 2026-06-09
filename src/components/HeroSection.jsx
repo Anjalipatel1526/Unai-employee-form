@@ -19,10 +19,10 @@ export default function HeroSection({ onStart }) {
         className="flex items-center gap-3 mb-12"
       >
         <div className="w-12 h-12 flex items-center justify-center">
-          <img src="/logo.png" alt="UNAI Tech Logo" className="w-full h-full object-contain" />
+          <img src="/logo.png" alt="UNAI TECH Logo" className="w-full h-full object-contain" />
         </div>
         <div className="text-left">
-          <p className="text-white font-display font-bold text-lg leading-tight">UNAI Tech</p>
+          <p className="text-white font-display font-bold text-lg leading-tight">UNAI TECH</p>
           <p className="text-white/40 text-[10px] font-medium tracking-widest uppercase">Employee Portal</p>
         </div>
       </motion.div>
